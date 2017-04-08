@@ -18,7 +18,7 @@ package schrodinger.scalaz.concurrent
 
 trait AllInstances {
   /** Schrodinger integration with Scalaz's `Task`. */
-  implicit def schrodingerScalazIOInstances: TaskInstances =
+  implicit def schrodingerScalazTaskInstances: TaskInstances =
     TaskInstances
 }
 
