@@ -1,5 +1,7 @@
 # Typelevel Schrodinger
 
+[![Build Status](https://travis-ci.org/alexandru/schrodinger.svg?branch=master)](https://travis-ci.org/alexandru/schrodinger)
+
 Common communication protocol for IO / Task data types.
 
 Aims to be a set of common interfaces to abstract over `cats.Eval`,

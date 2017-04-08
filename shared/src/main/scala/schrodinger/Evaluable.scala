@@ -17,7 +17,6 @@
 package schrodinger
 
 import schrodinger.instances.AllEventualInstances
-
 import scala.annotation.implicitNotFound
 
 /** A type-class for `F[_]` data types that have a data constructor
