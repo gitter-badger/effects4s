@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-package schrodinger.instances
+package schrodinger.scalaz.concurrent
 
-import scala.concurrent.{ExecutionContext, Future}
+import schrodinger.scalaz.concurrent.all._
+import schrodinger.laws.discipline.DeferrableTests
+import scalaz.concurrent.Task
 
-/** Groups [[schrodinger.Eventual]] instances, to be inherited in companion objects.
-  *
-  * @see [[schrodinger.Effect$ Effect]] and [[schrodinger.Evaluable$ Evaluable]].
-  */
-trait AllEventualInstances[TypeClass[F[_]] >: schrodinger.Eventual[F]] {
-  /** Default instances for Scala's [[scala.concurrent.Future Future]]. */
-  implicit def schrodingerFutureInstances(implicit ec: ExecutionContext): TypeClass[Future] =
-    new FutureInstances()
+object TaskLawsSuite extends ConcurrentLawsSuite {
+  checkAll("Deferrable[Task]") { implicit ec =>
+    DeferrableTests[Task].evaluableWithError[Int, Long]
+  }
 }

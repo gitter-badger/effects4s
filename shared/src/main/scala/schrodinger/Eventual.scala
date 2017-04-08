@@ -17,7 +17,6 @@
 package schrodinger
 
 import schrodinger.instances.AllEventualInstances
-
 import scala.annotation.implicitNotFound
 
 /** Type-class describing `F[_]` data types capable of evaluating

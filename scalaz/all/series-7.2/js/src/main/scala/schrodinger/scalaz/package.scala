@@ -14,16 +14,13 @@
  * limitations under the License.
  */
 
-package schrodinger.instances
+package schrodinger
 
-import scala.concurrent.{ExecutionContext, Future}
-
-/** Groups [[schrodinger.Eventual]] instances, to be inherited in companion objects.
+/** Package providing Schrodinger integration with Scalaz.
   *
-  * @see [[schrodinger.Effect$ Effect]] and [[schrodinger.Evaluable$ Evaluable]].
+  * For usage, this import needs to be brought in scope:
+  * {{{
+  *   import schrodinger.scalaz.all._
+  * }}}
   */
-trait AllEventualInstances[TypeClass[F[_]] >: schrodinger.Eventual[F]] {
-  /** Default instances for Scala's [[scala.concurrent.Future Future]]. */
-  implicit def schrodingerFutureInstances(implicit ec: ExecutionContext): TypeClass[Future] =
-    new FutureInstances()
-}
+package object scalaz
