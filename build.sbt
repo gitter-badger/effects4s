@@ -1,3 +1,8 @@
+import com.typesafe.sbt.pgp.PgpKeys
+
+import scala.xml.Elem
+import scala.xml.transform.{RewriteRule, RuleTransformer}
+
 addCommandAlias("ci", "; clean; test")
 
 lazy val scalaTestVersion = "3.0.1"
@@ -99,7 +104,61 @@ lazy val sharedSettings = Seq(
     }
   },
   scalacOptions in (Compile, console) ~= {_.filterNot("-Ywarn-unused-import" == _)},
-  scalacOptions in (Test, console) ~= {_.filterNot("-Ywarn-unused-import" == _)}
+  scalacOptions in (Test, console) ~= {_.filterNot("-Ywarn-unused-import" == _)},
+
+  // -- Settings meant for deployment on oss.sonatype.org
+
+  useGpg := true,
+  useGpgAgent := true,
+  usePgpKeyHex("F985F688"),
+
+  publishMavenStyle := true,
+  releaseCrossBuild := true,
+  releasePublishArtifactsAction := PgpKeys.publishSigned.value,
+
+  publishTo := {
+    val nexus = "https://oss.sonatype.org/"
+    if (isSnapshot.value)
+      Some("snapshots" at nexus + "content/repositories/snapshots")
+    else
+      Some("releases"  at nexus + "service/local/staging/deploy/maven2")
+  },
+
+  publishArtifact in Test := false,
+  pomIncludeRepository := { _ => false }, // removes optional dependencies
+
+  // For evicting Scoverage out of the generated POM
+  // See: https://github.com/scoverage/sbt-scoverage/issues/153
+  pomPostProcess := { (node: xml.Node) =>
+    new RuleTransformer(new RewriteRule {
+      override def transform(node: xml.Node): Seq[xml.Node] = node match {
+        case e: Elem
+          if e.label == "dependency" && e.child.exists(child => child.label == "groupId" && child.text == "org.scoverage") => Nil
+        case _ => Seq(node)
+      }
+    }).transform(node).head
+  },
+
+  pomExtra :=
+    <url>https://monix.io/</url>
+      <licenses>
+        <license>
+          <name>Apache License, Version 2.0</name>
+          <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+          <distribution>repo</distribution>
+        </license>
+      </licenses>
+      <scm>
+        <url>git@github.com:monix/monix.git</url>
+        <connection>scm:git:git@github.com:monix/monix.git</connection>
+      </scm>
+      <developers>
+        <developer>
+          <id>alexelcu</id>
+          <name>Alexandru Nedelcu</name>
+          <url>https://alexn.org</url>
+        </developer>
+      </developers>
 )
 
 lazy val doNotPublishArtifact = Seq(
