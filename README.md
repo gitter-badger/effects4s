@@ -1,6 +1,6 @@
 # Effects4s
 
-[![Build Status](https://travis-ci.org/monix/schrodinger.svg?branch=master)](https://travis-ci.org/monix/schrodinger)
+[![Build Status](https://travis-ci.org/effects4s/effects4s.svg?branch=master)](https://travis-ci.org/effects4s/effects4s)
 
 Common communication protocol for `IO` / `Task` data types.
 
