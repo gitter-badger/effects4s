@@ -13,3 +13,4 @@ Or in other words, this aims to be the
 **[Reactive Streams](http://www.reactive-streams.org/)**
 protocol of `IO`, `Task` and `Future` data types.
 
+**Work in progress!!**

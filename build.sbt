@@ -4,7 +4,7 @@ lazy val scalaTestVersion = "3.0.1"
 lazy val disciplineVersion = "0.7.3"
 
 lazy val sharedSettings = Seq(
-  organization := "io.monix",
+  organization := "org.effects4s",
 
   scalaVersion := "2.12.1",
   crossScalaVersions := Seq("2.10.6", "2.11.8", "2.12.1"),
