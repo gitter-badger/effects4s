@@ -1,11 +1,13 @@
 addCommandAlias("ci", "; clean; test")
 
-lazy val catsVersion = "0.9.0"
-lazy val scalaz72Version = "7.2.10"
-lazy val scalaTestVersion = "3.0.0"
+lazy val scalaTestVersion = "3.0.1"
+lazy val disciplineVersion = "0.7.3"
 
 lazy val sharedSettings = Seq(
-  organization := "org.typelevel",
+  organization := "io.monix",
+
+  scalaVersion := "2.12.1",
+  crossScalaVersions := Seq("2.10.6", "2.11.8", "2.12.1"),
 
   scalacOptions ++= Seq(
     // warnings
@@ -118,31 +120,22 @@ lazy val unidocSettings = Seq(
   scalacOptions in (ScalaUnidoc, unidoc) ++=
     Opts.doc.title(s"Schrodinger"),
   scalacOptions in (ScalaUnidoc, unidoc) ++=
-    Opts.doc.sourceUrl(s"https://github.com/typelevel/schrodinger/tree/v${version.value}€{FILE_PATH}.scala"),
+    Opts.doc.sourceUrl(s"https://github.com/effects4s/effects4s/tree/v${version.value}€{FILE_PATH}.scala"),
   scalacOptions in (ScalaUnidoc, unidoc) ++=
     Seq("-doc-root-content", file("rootdoc.txt").getAbsolutePath),
   scalacOptions in (ScalaUnidoc, unidoc) ++=
     Opts.doc.version(s"${version.value}")
 )
 
-lazy val testSettings = Seq(
-  testFrameworks := Seq(new TestFramework("minitest.runner.Framework")),
-  libraryDependencies ++= Seq(
-    // For TestScheduler
-    "io.monix" %%% "monix-execution" % "2.2.4" % Test,
-    "io.monix" %%% "minitest-laws" % "1.0.1" % Test
-  )
-)
-
-lazy val schrodinger = project.in(file("."))
+lazy val effects4s = project.in(file("."))
   .enablePlugins(ScalaUnidocPlugin)
-  .aggregate(coreJVM, coreJS, lawsJVM, lawsJS, scalazEffect72JVM, scalazEffect72JS, scalazConcurrent72JVM, scalaz72JVM, scalaz72JS)
+  .aggregate(coreJVM, coreJS, lawsJVM, lawsJS)
   .settings(sharedSettings)
   .settings(doNotPublishArtifact)
   .settings(unidocSettings)
 
 lazy val coreCommon = sharedSettings ++ Seq(
-  name := "schrodinger"
+  name := "effects4s-core"
 )
 
 lazy val coreJVM = project.in(file("./.jvm"))
@@ -152,70 +145,21 @@ lazy val coreJS = project.in(file("./.js"))
   .enablePlugins(ScalaJSPlugin)
   .settings(coreCommon)
 
-lazy val lawsCommon = sharedSettings ++ testSettings ++ Seq(
-  name := "schrodinger-laws",
+lazy val lawsCommon = sharedSettings ++ Seq(
+  name := "effects4s-laws",
   libraryDependencies ++= Seq(
-    "org.typelevel" %%% "cats-laws" % catsVersion
+    "org.typelevel" %%% "discipline" % disciplineVersion,
+    // For TestScheduler
+    "io.monix" %%% "monix-execution" % "2.2.4" % Test,
+    "org.scalatest" %%% "scalatest" % scalaTestVersion % Test
   )
 )
 
-lazy val lawsJVM = project.in(file("./laws/.jvm"))
+lazy val lawsJVM = project.in(file("./laws/jvm"))
   .settings(lawsCommon)
   .dependsOn(coreJVM)
 
-lazy val lawsJS = project.in(file("./laws/.js"))
+lazy val lawsJS = project.in(file("./laws/js"))
   .enablePlugins(ScalaJSPlugin)
   .settings(lawsCommon)
   .dependsOn(coreJS)
-
-// Integration with scalaz-effect 7.2
-
-lazy val scalazEffect72Common =
-  sharedSettings ++ testSettings ++ Seq(
-    name := "schrodinger-scalaz-effect-7_2",
-    libraryDependencies ++= Seq(
-      "org.scalaz" %%% "scalaz-effect" % scalaz72Version
-    ))
-
-lazy val scalazEffect72JVM = project.in(file("scalaz/effect/series-7.2/.jvm"))
-  .settings(scalazEffect72Common)
-  .dependsOn(coreJVM)
-  .dependsOn(lawsJVM % "test->test")
-
-lazy val scalazEffect72JS = project.in(file("scalaz/effect/series-7.2/.js"))
-  .enablePlugins(ScalaJSPlugin)
-  .settings(scalazEffect72Common)
-  .dependsOn(coreJS)
-  .dependsOn(lawsJS % "test->test")
-
-// Integration with scalaz-concurrent 7.2
-
-lazy val scalazConcurrent72JVM = project.in(file("scalaz/concurrent/series-7.2/jvm"))
-  .dependsOn(coreJVM)
-  .dependsOn(lawsJVM % "test->test")
-  .settings(sharedSettings ++ testSettings)
-  .settings(
-    name := "schrodinger-scalaz-concurrent-7_2",
-    libraryDependencies ++= Seq(
-      "org.scalaz" %%% "scalaz-concurrent" % scalaz72Version
-    )
-  )
-
-// Integration with Scalaz 7.2: effect + concurrent (if available)
-
-lazy val scalaz72Common =
-  sharedSettings ++ testSettings ++ Seq(
-    name := "schrodinger-scalaz-7_2",
-    libraryDependencies ++= Seq(
-      "org.scalaz" %%% "scalaz-core" % scalaz72Version
-    ))
-
-lazy val scalaz72JVM = project.in(file("scalaz/all/series-7.2/jvm"))
-  .settings(scalaz72Common)
-  .dependsOn(scalazEffect72JVM, scalazConcurrent72JVM)
-  .dependsOn(lawsJVM % "test->test")
-
-lazy val scalaz72JS = project.in(file("scalaz/all/series-7.2/js"))
-  .enablePlugins(ScalaJSPlugin)
-  .settings(scalaz72Common)
-  .dependsOn(scalazEffect72JS)

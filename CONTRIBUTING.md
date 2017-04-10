@@ -6,7 +6,8 @@ license that Schrodinger is licensed with (Apache 2.0, see LICENSE.txt).
 
 ## Code of Conduct
 
-People are expected to follow the [Typelevel Code of Conduct](http://typelevel.org/conduct.html)
+People are expected to follow the 
+[Typelevel Code of Conduct](http://typelevel.org/conduct.html)
 when discussing Schrodinger on the GitHub page, Gitter channel, or other venues.
 
 We hope that our community will be respectful, helpful, and kind. If you find 
